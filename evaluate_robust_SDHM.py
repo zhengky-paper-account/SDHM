@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 import numpy as np
 from typing import List, Tuple, Dict
-from sklearn.manifold import TSNE   # ✅ 用 t-SNE 替代 UMAP
+from sklearn.manifold import TSNE  
 
 # 字体
 font_path = "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
