@@ -28,7 +28,7 @@ print('CUDA available:', torch.cuda.is_available())
 # 检查CUDA状态
 USE_CUDA = torch.cuda.is_available()
 device = torch.device("cuda" if USE_CUDA else "cpu")
-print(f"✅ CUDA检测结果:")
+print(f"CUDA检测结果:")
 print(f"  - 是否使用CUDA: {USE_CUDA}")
 print(f"  - 设备: {device}")
 print(f"  - CUDA设备数量: {torch.cuda.device_count()}")
@@ -52,7 +52,7 @@ def load_model(model, checkpoint_path):
         best_acc: 最佳准确率
     """
     if not checkpoint_path or not os.path.exists(checkpoint_path):
-        print(f"❌ 模型权重文件不存在: {checkpoint_path}")
+        print(f"模型权重文件不存在: {checkpoint_path}")
         return 0, 0.0
     
     print(f"🔄 正在加载模型权重: {checkpoint_path}")
@@ -63,20 +63,20 @@ def load_model(model, checkpoint_path):
         
         # 加载模型权重
         model.load_state_dict(checkpoint['state_dict'])
-        print("✅ 模型权重加载成功")
+        print("模型权重加载成功")
         
         # 获取epoch和最佳准确率
         start_epoch = checkpoint.get('epoch', 0)
         best_acc = checkpoint.get('best_acc', 0.0)
         
-        print(f"📊 模型加载信息:")
+        print(f"模型加载信息:")
         print(f"  - 起始epoch: {start_epoch}")
         print(f"  - 最佳准确率: {best_acc:.4f}")
         
         return start_epoch, best_acc
         
     except Exception as e:
-        print(f"❌ 加载模型失败: {e}")
+        print(f"加载模型失败: {e}")
         print("将从头开始训练")
         return 0, 0.0
 
