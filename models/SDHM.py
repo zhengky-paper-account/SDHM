@@ -1,5 +1,5 @@
 '''
-* @name: deva.py
+* @name: SDHM.py
 '''
 
 import torch
