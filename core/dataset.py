@@ -28,9 +28,9 @@ class MMDataset(Dataset):
         DATA_MAP[args.datasetName]()
 
     def __init_mosi(self):
-        print(f"🔍 正在加载数据文件: {self.args.dataPath}")
-        print(f"🔍 数据集名称: {self.args.datasetName}")
-        print(f"🔍 训练模式: {self.args.train_mode}")
+        print(f"正在加载数据文件: {self.args.dataPath}")
+        print(f"数据集名称: {self.args.datasetName}")
+        print(f"训练模式: {self.args.train_mode}")
         with open(self.args.dataPath, 'rb') as f:
             data = pickle.load(f) 
         #data['train']['text_bert'] (1368,3,39)
@@ -64,9 +64,9 @@ class MMDataset(Dataset):
         }
         
         # 添加调试信息
-        print(f"🔍 数据集标签范围: {self.labels['M'].min():.3f} - {self.labels['M'].max():.3f}")
-        print(f"🔍 数据集标签均值: {self.labels['M'].mean():.3f}")
-        print(f"🔍 数据集标签标准差: {self.labels['M'].std():.3f}")
+        print(f"数据集标签范围: {self.labels['M'].min():.3f} - {self.labels['M'].max():.3f}")
+        print(f"数据集标签均值: {self.labels['M'].mean():.3f}")
+        print(f"数据集标签标准差: {self.labels['M'].std():.3f}")
         if self.args.datasetName == 'sims':
             for m in "TAV":
                 self.labels[m] = data[self.mode][self.args.train_mode+'_labels_'+m]#定义lables【T】，【A】，【V】
