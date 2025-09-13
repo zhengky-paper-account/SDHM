@@ -911,7 +911,7 @@ class DiffusionSCEBlock(nn.Module):
     def __init__(self,structure="NN",lsm_type='linear_attention',dim=128, depth=2, num_experts=5, top_k=2, hidden_dim=256,
                  diffusion_steps=30,use_diffusion=True):
         """
-        专门用于SDHM的SCE（Context Enhancement Unit）的扩散增强模块
+        专门用于SDHM的SCE扩散增强模块
         """
         super().__init__()
         self.use_diffusion = use_diffusion
