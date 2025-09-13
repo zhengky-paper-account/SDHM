@@ -217,30 +217,28 @@ class SDHM(nn.Module):
         h_fusion_a = torch.cat([h_fusion_a, h_at], dim=-1)
         
         h_fusion_a = self.aatfusion_dropout(h_fusion_a)
-        #h_fusion_a = F.relu(self.aatfusion_layer(h_fusion_a))#原代码
-        ###############新代码###################################
+ 
         h_fusion_a = self.aat_moe(h_fusion_a, h_fusion_a, h_fusion_a)  # LinearMoEBlock
         h_fusion_a = self.aat_proj(h_fusion_a)
-        ##################################################
+    
 
         # Combining vision and vision_text
         h_fusion_v = torch.cat([h_fusion_v, h_vt], dim=-1)
         h_fusion_v = self.vvtfusion_dropout(h_fusion_v)
-        #h_fusion_v = F.relu(self.vvtfusion_layer(h_fusion_v))#原代码
-        ###############新代码###################################
+     
+       
         h_fusion_v = self.vvt_moe(h_fusion_v, h_fusion_v, h_fusion_v)  # LinearMoEBlock
         h_fusion_v = self.vvt_proj(h_fusion_v)
-        ##################################################
+   
 
 
         # Combine text and audio_text vision_text
         h_fusion_t = torch.cat([h_vt, h_at, h_t], dim=-1)
         h_fusion_t = self.avttfusion_dropout(h_fusion_t)
-        #h_fusion_t = F.relu(self.avttfusion_layer(h_fusion_t))#原代码
-        ###############新代码###################################
+        
         h_fusion_t = self.avtt_moe(h_fusion_t, h_fusion_t, h_fusion_t)  # LinearMoEBlock
         h_fusion_t = self.avtt_proj(h_fusion_t)
-        ##################################################
+  
 
        
         # 使用扩散增强的sce处理
@@ -289,7 +287,7 @@ class SDHM(nn.Module):
         else:
             feat = self.fusion_layer_moe(h_minor, h_minor, h_t_list[-1])[:, 0] # ([64, 128])#新代码3
              
-        ##################################################
+    
         feat = feat.unsqueeze(1)
         feat = self.head_moe(feat, feat, feat)[:, 0]
         output = self.cls_head(feat)
