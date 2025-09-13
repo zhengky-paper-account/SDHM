@@ -146,7 +146,7 @@ class UNetModel(nn.Module):
             
         return decoded2
 
-# ✅ Expert 子网络
+#  Expert 子网络
 class MLPExpert(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim):
         super().__init__()
@@ -159,7 +159,7 @@ class MLPExpert(nn.Module):
     def forward(self, x):
         return self.net(x)
 
-# ✅ 路由器
+#  路由器
 class TopKRouter(nn.Module):
     def __init__(self, embed_dim, num_experts, top_k, noisy_gating=True):
         super().__init__()
@@ -177,7 +177,7 @@ class TopKRouter(nn.Module):
         topk_scores, topk_indices = torch.topk(scores, self.top_k, dim=-1)
         return topk_scores, topk_indices, scores
 
-# ✅ MoE Layer
+#  MoE Layer
 class MoEBlock(nn.Module):
     def __init__(self, embed_dim, num_experts=4, top_k=2, hidden_dim=512, output_dim=None, expert_dropout=0.0):
         super().__init__()
@@ -296,7 +296,7 @@ class LinearRNN(nn.Module):
         return torch.stack(outputs, dim=1)
 
 
-# ✅ 封装模块：LSMBlock
+#  封装模块：LSMBlock
 # -------------------------
 class LSMBlock(nn.Module):
     def __init__(self, dim, lsm_type='linear_attention'):
@@ -321,7 +321,7 @@ class LSMBlock(nn.Module):
     
 
 
-# ✅ LSM + MoE 联合模块
+#  LSM + MoE 联合模块
 class LinearMoEBlock(nn.Module):
     def __init__(self, dim, num_experts, top_k=2, hidden_dim=512, lsm_type='linear_attention'):
         super().__init__()
@@ -340,7 +340,7 @@ class LinearMoEBlock(nn.Module):
         return q
     
 
-# ✅ 标准 Transformer 块（用于混合）
+#  标准 Transformer 块（用于混合）
 class TransformerEncoder(nn.Module):
     def __init__(self, dim, depth, heads, dim_head, mlp_dim, dropout = 0.):
         super().__init__()
@@ -370,7 +370,7 @@ class TransformerMoEBlock(nn.Module):
         return q
 
 
-# ✅ 主体模块：支持 LNLN、LLNL 等结构
+#  主体模块：支持 LNLN、LLNL 等结构
 class HybridLinearMoEBlock(nn.Module):
     def __init__(self,  *, num_frames=50, token_len=8, save_hidden,dim, depth, structure="LNLN", 
                 num_experts=4, top_k=2, hidden_dim, 
@@ -409,7 +409,7 @@ class HybridLinearMoEBlock(nn.Module):
                         num_experts=num_experts,
                         top_k=top_k,
                         hidden_dim=hidden_dim,
-                        lsm_type=lsm_type  # ✅ 传入可选的 LSM 类型
+                        lsm_type=lsm_type  #  传入可选的 LSM 类型
                     )
                 )
             else:
@@ -467,7 +467,7 @@ class HybridLinearMoEBlock(nn.Module):
         else:
             return q
 
-# ✅ 扩散模型增强的HybridMoEBlock
+#  扩散模型增强的HybridMoEBlock
 class DiffusionHybridMoEBlock(nn.Module):
     def __init__(self, *, num_frames=50, token_len=8, save_hidden, dim, depth, structure="LNLN", 
                 num_experts=4, top_k=2, hidden_dim, 
@@ -906,7 +906,7 @@ class DiffusionHybridMoEBlock(nn.Module):
         
         return base_q, fused_q
 
-# ✅ 专门用于SCE的扩散增强模块
+#  专门用于SCE的扩散增强模块
 class DiffusionSCEBlock(nn.Module):
     def __init__(self,structure="NN",lsm_type='linear_attention',dim=128, depth=2, num_experts=5, top_k=2, hidden_dim=256,
                  diffusion_steps=30,use_diffusion=True):
