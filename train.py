@@ -55,7 +55,7 @@ def load_model(model, checkpoint_path):
         print(f"模型权重文件不存在: {checkpoint_path}")
         return 0, 0.0
     
-    print(f"🔄 正在加载模型权重: {checkpoint_path}")
+    print(f"正在加载模型权重: {checkpoint_path}")
     
     try:
         # 加载checkpoint
