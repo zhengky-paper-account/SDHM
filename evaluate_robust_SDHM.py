@@ -1,7 +1,7 @@
 import os
 import argparse
 import torch
-from core.dataset import MMDataLoader
+from core.dataset import MMDataLoader, MMDataEvaluationLoader
 from models.SDHM import build_model
 from core.metric import MetricsTop
 from opts import parse_opts
@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 import numpy as np
 from typing import List, Tuple, Dict
-from sklearn.manifold import TSNE  
+from sklearn.manifold import TSNE   
 
 # 字体
 font_path = "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
@@ -26,14 +26,7 @@ def set_seed(seed: int):
     torch.cuda.manual_seed_all(seed)
 
 
-def apply_missing_mask(batch_tensor: torch.Tensor, missing_rate: float) -> torch.Tensor:
-    if missing_rate <= 0.0:
-        return batch_tensor
-    if missing_rate >= 1.0:
-        return torch.zeros_like(batch_tensor)
-    batch_size = batch_tensor.size(0)
-    mask = (torch.rand(batch_size, 1, 1, device=batch_tensor.device) < missing_rate).float()
-    return batch_tensor * (1.0 - mask)
+# 不再需要动态生成掩码，数据加载器已经处理了
 
 
 # ======================== t-SNE 可视化函数 ========================
@@ -174,18 +167,15 @@ def evaluate_once(model: torch.nn.Module, loader: torch.utils.data.DataLoader, m
 
     with torch.no_grad():
         for batch_idx, data in enumerate(loader):
-            img = data['vision'].to(device)
-            audio = data['audio'].to(device)
-            text = data['text'].to(device)
+            # 使用数据加载器提供的缺失版本数据
+            img = data['vision_m'].to(device)  # 使用缺失版本
+            audio = data['audio_m'].to(device)  # 使用缺失版本
+            text = data['text_m'].to(device)    # 使用缺失版本
             audio_text = data['audio_text'].to(device)
             vision_text = data['vision_text'].to(device)
             label = data['labels']['M'].to(device).view(-1, 1)
 
-            img_m = apply_missing_mask(img, missing_rate)
-            audio_m = apply_missing_mask(audio, missing_rate)
-            text_m = apply_missing_mask(text, missing_rate)
-
-            output = model(img_m, audio_m, text_m, audio_text, vision_text, current_epoch=160, return_vis_pairs=collect_vis_pairs)
+            output = model(img, audio, text, audio_text, vision_text, current_epoch=160, return_vis_pairs=collect_vis_pairs)
 
             pred = output[0] if isinstance(output, tuple) else output
             y_pred.append(pred.cpu())
@@ -220,7 +210,6 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--key_eval', type=str, default='')
     parser.add_argument('--checkpoint', type=str, default='')
-    parser.add_argument('--missing_rates', type=str, default='0.0,0.1,0.2,0.3,0.5,0.8')
     parser.add_argument('--seeds', type=str, default='')
     parser.add_argument('--save_feature_comparison', action='store_true')
     args_cli, unknown = parser.parse_known_args()
@@ -238,17 +227,20 @@ def main():
     else:
         print("未找到检查点，使用随机初始化")
 
-    dataLoader = MMDataLoader(opt)
-    test_loader = dataLoader['test']
     dataset_name = opt.datasetName
     metrics_fn = MetricsTop().getMetics(dataset_name)
 
-    missing_rates = [float(x) for x in args_cli.missing_rates.split(',') if x.strip() != '']
+    # 硬编码缺失率列表
+    missing_rates = [0.0, 0.1, 0.2, 0.3, 0.5, 0.8]
     seed_list = [int(s) for s in args_cli.seeds.split(',')] if args_cli.seeds else []
 
     r2pairs: Dict[float, Tuple[np.ndarray, np.ndarray]] = {}
 
     for cur_r in missing_rates:
+        # 为每个缺失率创建新的数据加载器
+        opt.missing_rate_eval_test = cur_r
+        test_loader = MMDataEvaluationLoader(opt)
+        
         results, base_pair, diff_pair = evaluate_once(model, test_loader, metrics_fn, cur_r, device, collect_vis_pairs=args_cli.save_feature_comparison)
         if args_cli.save_feature_comparison and base_pair is not None and diff_pair is not None and cur_r not in r2pairs:
             r2pairs[cur_r] = (base_pair, diff_pair)
