@@ -2,7 +2,7 @@ import os
 import argparse
 import torch
 from core.dataset import MMDataLoader, MMDataEvaluationLoader
-from models.deva import build_model
+from models.SDHM import build_model
 from core.metric import MetricsTop
 from opts import parse_opts
 import matplotlib.pyplot as plt
