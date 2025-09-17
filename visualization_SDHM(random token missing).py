@@ -5,16 +5,16 @@ from core.dataset import MMDataLoader, MMDataEvaluationLoader
 from models.deva import build_model
 from core.metric import MetricsTop
 from opts import parse_opts
-#import matplotlib.pyplot as plt
-#import matplotlib.font_manager as fm
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
 import numpy as np
-#from typing import List, Tuple, Dict
-from sklearn.manifold import TSNE   # ✅ 用 t-SNE 替代 UMAP
+from typing import List, Tuple, Dict
+from sklearn.manifold import TSNE  
 
 # 字体
-#font_path = "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
-#my_font = fm.FontProperties(fname=font_path)
-#plt.rcParams['font.sans-serif'] = [my_font.get_name()]
+font_path = "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
+my_font = fm.FontProperties(fname=font_path)
+plt.rcParams['font.sans-serif'] = [my_font.get_name()]
 
 
 def set_seed(seed: int):
